@@ -20,7 +20,6 @@ export class UserRepository extends Repository<User> {
     try {
       await user.save();
     } catch (err) {
-      console.log(err.code);
       if (err.code === '23505') {
         throw new ConflictException('Username already exists!');
       } else {
@@ -33,6 +32,7 @@ export class UserRepository extends Repository<User> {
     authCreadentialsDto: AuthCredentialsDto,
   ): Promise<string> {
     const { username, password } = authCreadentialsDto;
+
     const user = await this.findOne({ username });
     if (user && (await user.validatePassword(password))) {
       return user.username;

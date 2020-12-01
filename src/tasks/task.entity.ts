@@ -23,6 +23,9 @@ export class Task extends BaseEntity {
   @Column()
   status: TaskStatus;
 
-  @ManyToMany((type) => User, (user) => user.tasks, { eager: false })
+  @ManyToMany((type) => User, (user) => user.tasks)
   user: User;
+
+  @Column()
+  userId: number;
 }
