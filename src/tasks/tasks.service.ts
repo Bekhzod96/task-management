@@ -1,4 +1,9 @@
-import { Injectable, NotAcceptableException } from '@nestjs/common';
+import {
+  Injectable,
+  InternalServerErrorException,
+  Logger,
+  NotAcceptableException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 
 import { User } from 'src/auth/user.entity';
@@ -10,6 +15,7 @@ import { TaskStatus } from './task.status.enum';
 
 @Injectable()
 export class TasksService {
+  logger = new Logger('TaskService');
   constructor(
     @InjectRepository(TaskRespository)
     private taskRepository: TaskRespository,
@@ -35,16 +41,33 @@ export class TasksService {
     task.description = description;
     task.status = TaskStatus.OPEN;
     task.userId = user.id;
-    await task.save();
+    try {
+      await task.save();
+    } catch (err) {
+      this.logger.error(
+        `Failed to create a task user "${user.username}". Date: ${createTaskDto}`,
+        err.stack,
+      );
+      throw new InternalServerErrorException();
+    }
     return task;
   }
 
   async removeTaskById(id: number, user: User): Promise<void> {
     const task = await this.taskRepository.findOne(id);
     if (task.userId !== user.id) {
-      throw new NotAcceptableException(`This Task #${id} not found`);
+      throw new NotAcceptableException(`Task #${id} not found`);
     }
-    await this.taskRepository.delete(id);
+
+    try {
+      await this.taskRepository.delete(id);
+    } catch (err) {
+      this.logger.error(
+        `Failed to delete a task for "${user.username}". Task: ${id}`,
+        err.stack,
+      );
+      throw new InternalServerErrorException();
+    }
   }
 
   async updateTaskStatus(
