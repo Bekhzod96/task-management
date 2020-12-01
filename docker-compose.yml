@@ -1,0 +1,13 @@
+version: '3'
+
+services:
+  taskDB:
+    image: postgres
+    container_name: taskDB
+    restart: always
+    environment:
+      POSTGRES_USERNAME: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DATABASE: taskmanagement
+    ports:
+      - '5432:5432'
