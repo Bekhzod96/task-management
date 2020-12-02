@@ -3,10 +3,11 @@ import {
   InternalServerErrorException,
   Logger,
   NotAcceptableException,
+  NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 
-import { User } from 'src/auth/user.entity';
+import { User } from '../auth/user.entity';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { GetTasksFilteDto } from './dto/get-task.filter.dto';
 import { Task } from './task.entity';
@@ -15,7 +16,7 @@ import { TaskStatus } from './task.status.enum';
 
 @Injectable()
 export class TasksService {
-  logger = new Logger('TaskService');
+  // logger = new Logger('TaskService');
   constructor(
     @InjectRepository(TaskRespository)
     private taskRepository: TaskRespository,
@@ -29,7 +30,7 @@ export class TasksService {
       where: { id, userId: user.id },
     });
     if (!found) {
-      throw new NotAcceptableException(`This Task #${id} not found`);
+      throw new NotFoundException(`This Task #${id} not found`);
     }
     return found;
   }
@@ -41,15 +42,15 @@ export class TasksService {
     task.description = description;
     task.status = TaskStatus.OPEN;
     task.userId = user.id;
-    try {
-      await task.save();
-    } catch (err) {
-      this.logger.error(
-        `Failed to create a task user "${user.username}". Date: ${createTaskDto}`,
-        err.stack,
-      );
-      throw new InternalServerErrorException();
-    }
+    await task.save();
+    // try {
+    // } catch (err) {
+    //   // this.logger.error(
+    //   //   `Failed to create a task user "${user.username}". Date: ${createTaskDto}`,
+    //   //   err.stack,
+    //   // );
+    //   throw new InternalServerErrorException();
+    // }
     return task;
   }
 
@@ -59,15 +60,15 @@ export class TasksService {
       throw new NotAcceptableException(`Task #${id} not found`);
     }
 
-    try {
-      await this.taskRepository.delete(id);
-    } catch (err) {
-      this.logger.error(
-        `Failed to delete a task for "${user.username}". Task: ${id}`,
-        err.stack,
-      );
-      throw new InternalServerErrorException();
-    }
+    await this.taskRepository.delete(id);
+    // try {
+    // } catch (err) {
+    //   // this.logger.error(
+    //   //   `Failed to delete a task for "${user.username}". Task: ${id}`,
+    //   //   err.stack,
+    //   // );
+    //   throw new InternalServerErrorException();
+    // }
   }
 
   async updateTaskStatus(

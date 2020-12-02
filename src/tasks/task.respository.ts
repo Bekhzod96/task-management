@@ -1,4 +1,4 @@
-import { User } from 'src/auth/user.entity';
+import { User } from '../auth/user.entity';
 import { EntityRepository, Repository } from 'typeorm';
 import { GetTasksFilteDto } from './dto/get-task.filter.dto';
 import { Task } from './task.entity';
@@ -6,6 +6,9 @@ import { InternalServerErrorException, Logger } from '@nestjs/common';
 
 @EntityRepository(Task)
 export class TaskRespository extends Repository<Task> {
+  createTask(createTask: any) {
+    throw new Error('Method not implemented.');
+  }
   private logger = new Logger();
   async getTasks(filterDto: GetTasksFilteDto, user: User): Promise<Task[]> {
     const { status, search } = filterDto;

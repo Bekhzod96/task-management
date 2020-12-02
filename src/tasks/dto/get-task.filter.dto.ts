@@ -5,7 +5,7 @@ import { TaskStatus } from '../task.status.enum';
 export class GetTasksFilteDto {
   @IsOptional()
   @IsIn([TaskStatus.OPEN, TaskStatus.IN_PROGRESS, TaskStatus.DONE])
-  status: TaskStatusValidationPipe;
+  status: TaskStatusValidationPipe | string;
 
   @IsOptional()
   search: string;

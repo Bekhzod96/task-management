@@ -1,5 +1,5 @@
 import { Matches } from 'class-validator';
-import { User } from 'src/auth/user.entity';
+import { User } from '../auth/user.entity';
 import {
   BaseEntity,
   Column,
